@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'appDjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-db_url = "postgres://proyectocarritocompras_user:Z7XcNe31GhyfZvunh8aKaxKKVDJmqPww@dpg-cnejrlug1b2c73cuhcj0-a.ohio-postgres.render.com/proyectocarritocompras"
 
-DATABASES = {
-    'default': dj_database_url.config(default=db_url, conn_max_age=600),
-}
+
+# DATABASES = {
+#     'default': dj_database_url.config(default=db_url, conn_max_age=600),
+# }
 
 
 # Password validation
