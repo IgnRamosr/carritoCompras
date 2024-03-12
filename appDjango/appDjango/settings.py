@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,6 +25,7 @@ SECRET_KEY = 'django-insecure-9)83h*-(gu3q_6*0u1hr*-n3&=@j_6g5m1r9xnvb4)$s7*vor)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+import dj_database_url
 
 ALLOWED_HOSTS = []
 
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'appDjango',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +57,7 @@ ROOT_URLCONF = 'appDjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,11 +76,10 @@ WSGI_APPLICATION = 'appDjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+db_url = "postgres://proyectocarritocompras_user:Z7XcNe31GhyfZvunh8aKaxKKVDJmqPww@dpg-cnejrlug1b2c73cuhcj0-a.ohio-postgres.render.com/proyectocarritocompras"
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=db_url, conn_max_age=600),
 }
 
 
@@ -115,9 +117,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "appDjango/static/",
+    # Otras carpetas de archivos estáticos si las tienes
+]
+
+# Configuración para desarrollo
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'appDjango/static'),
+]
+
+# Configuración para producción
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MEDIA_URL = 'appDjango/static/assets/'
+MEDIA_ROOT = BASE_DIR / "appDjango/static/assets/"
