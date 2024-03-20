@@ -45,6 +45,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Obtener el ID del producto del atributo data del botón clicado
             const idProducto = event.target.getAttribute('data-id');
     
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            let productoEnCarrito = carrito.find(producto => producto && producto.id === idProducto);
+            let cantidad = productoEnCarrito ? productoEnCarrito.cantidad : 0;
+    
+    
             // Realizar una solicitud Fetch para obtener los detalles del producto
             try {
                 const response = await fetch(`/detalle_producto/${idProducto}/`);
@@ -53,44 +58,45 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 const producto = await response.json();
     
-                // Obtener el carrito actual del localStorage (si existe)
-                let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+                // Verificar si la cantidad deseada no supera el stock disponible
+                if (cantidad < producto.cantidad) {
+                    // Incrementar la cantidad según la lógica establecida
+                    cantidad++;
     
-                // Verificar si el artículo ya está en el carrito
-                const productoEnCarritoIndex = carrito.findIndex(producto => producto && producto.id === idProducto);
+                    // Verificar si la cantidad deseada es mayor que el stock disponible
+                    if (cantidad > producto.cantidad) {
+                        // Mostrar un mensaje de alerta al usuario
+                        alert(`No puedes agregar más del stock disponible (${producto.cantidad}).`);
+                        return; // Salir de la función sin agregar el producto al carrito
+                    }
     
-                let cantidad = 1; // Por defecto, asumimos que es la primera vez que se agrega
+                    // Actualizar la cantidad del producto en el objeto carrito
+                    carrito[idProducto] = cantidad;
     
-                if (productoEnCarritoIndex !== -1) {
-                    // Si el artículo ya está en el carrito, actualizar la cantidad
-                    cantidad = carrito[productoEnCarritoIndex].cantidad + 1;
-                    carrito[productoEnCarritoIndex].cantidad = cantidad;
-                } else {
-                    // Si el artículo no está en el carrito, agregarlo
-                    carrito.push({
+                    // Guardar el objeto carrito en el Local Storage
+                    localStorage.setItem('carrito', JSON.stringify(carrito));
+    
+                    // Crear un objeto producto con la información obtenida
+                    const detalleProducto = {
                         id: idProducto,
                         nombre: producto.nombre,
                         precio: producto.precio,
                         imagen: producto.imagen,
-                        cantidad: cantidad,
-                    });
+                        cantidad: 1,
+                    };
+    
+                    // Llamar a la función agregarCarrito con el producto obtenido como parámetro
+                    agregarCarrito(detalleProducto);
+                } else {
+                    // Informar al usuario que la cantidad deseada supera el stock disponible
+                    alert(`La cantidad deseada para ${producto.nombre} supera el stock disponible (${producto.cantidad}).`);
                 }
-    
-                // Guardar el carrito actualizado en el localStorage
-                localStorage.setItem('carrito', JSON.stringify(carrito));
-    
-                // Actualizar el valor de data-cantidad en todos los botones
-                document.querySelectorAll(`.agregar-carrito-btn[data-id="${idProducto}"]`).forEach(button => {
-                    button.setAttribute('data-cantidad', cantidad);
-                });
-    
-                // Llamar a la función agregarCarrito con el producto obtenido como parámetro
-                agregarCarrito(carrito);
             } catch (error) {
                 console.error('Error al obtener los datos del producto:', error);
             }
         }
     });
+    
     
     // Obtener las cantidades del Local Storage al cargar la página
     const carritoLocalStorage = JSON.parse(localStorage.getItem('carrito')) || [];

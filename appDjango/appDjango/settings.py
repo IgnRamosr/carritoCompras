@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'appDjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
+# db_url = '[URL_BDD_EXTERNA]'
 
 # DATABASES = {
 #     'default': dj_database_url.config(default=db_url, conn_max_age=600),
